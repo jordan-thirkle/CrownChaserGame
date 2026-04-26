@@ -7,8 +7,8 @@
 - [x] Phase 3: Integration & Hardening (UI Manager implemented)
 
 ## Current Task
-- **Phase 3 Complete**: All core systems integrated. Feature Complete.
-- Moving to **Verification & Polish**.
+- **Performance Stress Test**: Increased entity counts (1500 crystals, 10 bots) and injected real-time Profiler.
+- Monitoring Frame Time, Accumulator Depth, and Physics Step Count.
 
 ## Completed Tasks
 - [x] Project initialization

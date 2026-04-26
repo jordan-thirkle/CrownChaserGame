@@ -96,7 +96,7 @@ export function spawnCrown(scene) {
 }
 
 export function spawnBots(scene, rivalDomain) {
-    const botNames = ['N30N', 'V0ID', 'GL1TCH'];
+    const botNames = ['N30N', 'V0ID', 'GL1TCH', 'PH4GE', 'CYB3R', 'K1LL', 'V1RUS', 'D3MON', 'PUL5E', 'GHOST'];
     if (rivalDomain) botNames.push(`SYS.${rivalDomain.toUpperCase()}`);
 
     for(let i = 0; i < botNames.length; i++) {

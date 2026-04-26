@@ -12,6 +12,27 @@ let lastTime = performance.now();
 let accumulator = 0;
 const fixedDt = 1 / 60; // Strictly 60Hz (16.666ms)
 
+class Profiler {
+    constructor() {
+        this.frameTimes = [];
+        this.accDepths = [];
+        this.lastLog = 0;
+    }
+    update(dt, acc) {
+        this.frameTimes.push(dt);
+        this.accDepths.push(acc);
+        if (performance.now() - this.lastLog > 1000) {
+            const avgDt = this.frameTimes.reduce((a, b) => a + b, 0) / this.frameTimes.length;
+            const maxAcc = Math.max(...this.accDepths);
+            console.log(`[PRF] FPS: ${Math.round(1/avgDt)} | Avg DT: ${(avgDt*1000).toFixed(2)}ms | Max Acc: ${(maxAcc*1000).toFixed(2)}ms`);
+            this.frameTimes = [];
+            this.accDepths = [];
+            this.lastLog = performance.now();
+        }
+    }
+}
+const profiler = new Profiler();
+
 function init() {
     console.log("SYS.RESONANCE // BOOT SEQUENCE INITIATED");
     
@@ -48,6 +69,7 @@ function gameLoop(currentTime) {
 
     accumulator += frameTime;
 
+    let steps = 0;
     // Fixed-Timestep Physics Execution
     while (accumulator >= fixedDt) {
         Physics.update(state, fixedDt);
@@ -55,11 +77,15 @@ function gameLoop(currentTime) {
         Webring.update(fixedDt);
         
         accumulator -= fixedDt;
+        steps++;
         
         // Clear single-frame input triggers after physics consumes them
         state.input.mouseJustPressed = false;
         state.input.mouseJustReleased = false;
     }
+
+    profiler.update(frameTime, accumulator);
+    if (steps > 1) console.warn(`[PRF] Physics Spike: ${steps} steps in one frame!`);
 
     Graphics.render(state);
 }

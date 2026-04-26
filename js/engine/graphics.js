@@ -32,7 +32,7 @@ export function init() {
 }
 
 function generateEnvironment() {
-    const count = 600; 
+    const count = 1500; 
     const arenaSize = 400;
     
     // AAA Visual Upgrade: Jagged Crystals with Additive Neon Wireframes

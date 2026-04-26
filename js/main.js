@@ -4,7 +4,7 @@ import { state, profile } from './core/state.js';
 // NOTE: We will uncomment these as we build them in Phase 2 & 3!
 import * as Graphics from './engine/graphics.js';
 import * as Physics from './engine/physics.js';
-// import * as TerminalUI from './ui/terminal.js';
+import * as TerminalUI from './ui/terminal.js';
 // import * as Webring from './core/webring.js';
 
 let lastTime = performance.now();
@@ -16,7 +16,7 @@ function init() {
     
     // 1. Initialize Peripheral Systems (Phase 3)
     // Webring.init(state);
-    // TerminalUI.init(state, profile);
+    TerminalUI.init(state, profile);
     
     // 2. Initialize Engine (Phase 2)
     Graphics.init(state);

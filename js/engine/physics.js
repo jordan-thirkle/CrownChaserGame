@@ -1,8 +1,10 @@
 // js/engine/physics.js
 import { state } from '../core/state.js';
 import { colliders, camera } from './graphics.js';
+import * as TerminalUI from '../ui/terminal.js';
 
 // O(1) Spatial Grid Data
+// ... (rest of the file)
 const spatialGrid = new Map();
 const cellSize = 30;
 const arenaSize = 400;
@@ -46,9 +48,6 @@ export function update(state, dt) {
         state.combo.timer -= dt; 
     } else if (state.combo.multiplier > 1.0) { 
         state.combo.multiplier = Math.max(1.0, state.combo.multiplier - (state.combo.decayRate * dt)); 
-        // TODO: Move UI updates to ui.js via event bus
-        const comboEl = document.getElementById('combo-val');
-        if (comboEl) comboEl.innerText = state.combo.multiplier.toFixed(1); 
     }
 
     // Translate player object into Vector3s for math
@@ -105,15 +104,7 @@ export function update(state, dt) {
             state.combo.multiplier = 1.0; 
             state.combo.timer = 0; 
             
-            // TODO: Move UI/Audio triggers to their respective modules
-            const comboEl = document.getElementById('combo-val');
-            if (comboEl) comboEl.innerText = "1.0";
-            
-            const damageFlash = document.getElementById('damage-flash');
-            if (damageFlash) {
-                damageFlash.style.opacity = 1; 
-                setTimeout(() => damageFlash.style.opacity = 0, 100);
-            }
+            TerminalUI.triggerDamageFlash();
             
             releaseTether(state, true); // Force break
             collided = true; 
@@ -142,9 +133,8 @@ export function update(state, dt) {
     state.player.pos = { x: pos.x, y: pos.y, z: pos.z };
     state.player.vel = { x: vel.x, y: vel.y, z: vel.z };
     
-    // Update raw speed HUD (TODO: move to ui.js)
-    const speedVal = document.getElementById('speed-val');
-    if (speedVal) speedVal.innerText = Math.floor(vel.length()).toString().padStart(3, '0');
+    // Update HUD
+    TerminalUI.updateHUD(vel.length(), state.combo.multiplier, state.combo.timer, state.combo.maxTime);
 }
 
 function attemptTether(state) {
@@ -170,8 +160,7 @@ function attemptTether(state) {
         state.tether.active = true; 
         state.tether.point = { x: closest.x, y: closest.y, z: closest.z };
         state.tether.length = camera.position.distanceTo(closest);
-        const crosshair = document.getElementById('crosshair');
-        if (crosshair) crosshair.classList.add('tethered'); 
+        TerminalUI.setCrosshairTethered(true);
     }
 }
 
@@ -188,11 +177,7 @@ function releaseTether(state, forced = false) {
             state.combo.multiplier += 1.0; 
             state.combo.timer = state.combo.maxTime;
             
-            const invertFlash = document.getElementById('invert-flash');
-            if (invertFlash) {
-                invertFlash.style.opacity = 1; 
-                setTimeout(() => invertFlash.style.opacity = 0, 100);
-            }
+            TerminalUI.triggerPerfectFlash();
         } else if (vel.clone().normalize().dot(forward) > 0) {
             vel.multiplyScalar(1.5);
         }
@@ -201,6 +186,5 @@ function releaseTether(state, forced = false) {
     }
     
     state.tether.active = false; 
-    const crosshair = document.getElementById('crosshair');
-    if (crosshair) crosshair.classList.remove('tethered');
+    TerminalUI.setCrosshairTethered(false);
 }

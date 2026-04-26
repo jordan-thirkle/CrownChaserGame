@@ -4,7 +4,7 @@
 - [x] Initial Proof of Concept
 - [x] Phase 1: The Spine (Modular Orchestrator & State)
 - [x] Phase 2: Extraction (Graphics & Physics Engines)
-- [ ] Phase 3: Integration & Hardening (UI & Entities)
+- [x] Phase 3: Integration & Hardening (UI Manager implemented)
 
 ## Current Task
 - **Implementing Phase 3**: Extracting UI logic to `js/ui/terminal.js` and bot/crown logic to `js/game/entities.js`.

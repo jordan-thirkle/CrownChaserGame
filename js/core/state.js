@@ -10,6 +10,9 @@ export const state = {
     gamePhase: 'intro', // 'intro', 'playing'
     isPlaying: false,
     isPaused: false,
+    lastDt: 0,
+    lastAcc: 0,
+    lastSteps: 0,
     currentVipId: 'crown_entity',
     
     player: {

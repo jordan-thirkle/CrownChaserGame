@@ -31,3 +31,12 @@
 ## Operational Rules
 - **Mandatory**: Commit and push all changes after every single prompt response.
 - **Technical Logging**: Every commit must include a detailed breakdown of the mathematical or architectural logic implemented (e.g., Hooke's Law parameters, spatial hash cell logic, or shader optimizations).
+
+## Strict Telemetry & Iteration Protocol
+After any modification to physics, entities, or the core loop, the workspace MUST execute the following workflow:
+1. **The Telemetry Dump:** The human developer will run the game with the Dev Console active and paste the output of `Debug.dumpReport()` into the prompt.
+2. **The AI Audit:** The AI will immediately halt feature development and analyze the telemetry dump, specifically looking for:
+   - Accumulator stress (Steps > 1 per frame).
+   - Speed cap violations (Player velocity exceeding calculated limits).
+   - Combo decay anomalies.
+3. **The Tuning Proposal:** The AI will respond with a markdown-formatted "Telemetry Report" diagnosing any mathematical inefficiencies, followed by a specific code patch to tune the "Magic Numbers" (drag, mass, spring tension) based on the empirical data.

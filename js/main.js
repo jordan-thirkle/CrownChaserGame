@@ -7,6 +7,7 @@ import * as Physics from './engine/physics.js';
 import * as TerminalUI from './ui/terminal.js';
 import * as Entities from './game/entities.js';
 import * as Webring from './core/webring.js';
+import * as Debug from './engine/debug.js';
 
 let lastTime = performance.now();
 let accumulator = 0;
@@ -47,6 +48,7 @@ function init() {
     // 3. Initialize Peripheral Systems (Requires Scene & State)
     Webring.init(Graphics.scene);
     TerminalUI.init(state, profile);
+    Debug.init();
     
     // 4. Start Loop
     requestAnimationFrame(gameLoop);
@@ -87,6 +89,11 @@ function gameLoop(currentTime) {
         state.input.mouseJustReleased = false;
     }
 
+    state.lastDt = frameTime;
+    state.lastAcc = accumulator;
+    state.lastSteps = steps;
+
+    Debug.update(frameTime, accumulator, steps);
     profiler.update(frameTime, accumulator);
     if (steps > 1) console.warn(`[PRF] Physics Spike: ${steps} steps in one frame!`);
 

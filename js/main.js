@@ -79,6 +79,9 @@ function gameLoop(currentTime) {
         accumulator -= fixedDt;
         steps++;
         
+        // Decement input buffer
+        if (state.input.bufferTimer > 0) state.input.bufferTimer -= fixedDt;
+        
         // Clear single-frame input triggers after physics consumes them
         state.input.mouseJustPressed = false;
         state.input.mouseJustReleased = false;
@@ -121,6 +124,7 @@ document.addEventListener('mousedown', e => {
     if (e.button === 0) {
         state.input.mouseDown = true;
         state.input.mouseJustPressed = true;
+        state.input.bufferTimer = 0.15; // 150ms of buffer for "intent"
     }
 });
 

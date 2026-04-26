@@ -39,8 +39,10 @@ export function getNearby(p) {
 }
 
 export function update(state, dt) {
-    // Handle Input Triggers
-    if (state.input.mouseJustPressed) attemptTether(state);
+    // Trigger Tether Logic (With Input Buffering)
+    if (state.input.bufferTimer > 0 && !state.tether.active) {
+        attemptTether(state);
+    }
     if (state.input.mouseJustReleased) releaseTether(state);
 
     // Combo Decay Math
@@ -161,6 +163,7 @@ function attemptTether(state) {
         state.tether.point = { x: closest.x, y: closest.y, z: closest.z };
         state.tether.length = camera.position.distanceTo(closest);
         TerminalUI.setCrosshairTethered(true);
+        state.input.bufferTimer = 0; // Consume intent
     }
 }
 

@@ -7,8 +7,7 @@
 - [x] Phase 3: Integration & Hardening (UI Manager implemented)
 
 ## Current Task
-- **Performance Stress Test**: Increased entity counts (1500 crystals, 10 bots) and injected real-time Profiler.
-- Monitoring Frame Time, Accumulator Depth, and Physics Step Count.
+- **Implementing Phase 3**: Input Buffering (Coyote Time) implemented for grapple fluidness.
 
 ## Completed Tasks
 - [x] Project initialization

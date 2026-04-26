@@ -39,7 +39,8 @@ export const state = {
     input: {
         forward: false, backward: false, left: false, right: false,
         pitch: 0, yaw: 0,
-        mouseDown: false, mouseJustPressed: false, mouseJustReleased: false
+        mouseDown: false, mouseJustPressed: false, mouseJustReleased: false,
+        bufferTimer: 0 // Window for "intent to grapple"
     }
 };
 

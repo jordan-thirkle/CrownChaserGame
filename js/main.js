@@ -6,6 +6,7 @@ import * as Graphics from './engine/graphics.js';
 import * as Physics from './engine/physics.js';
 import * as TerminalUI from './ui/terminal.js';
 import * as Entities from './game/entities.js';
+import * as Webring from './core/webring.js';
 
 let lastTime = performance.now();
 let accumulator = 0;
@@ -15,7 +16,7 @@ function init() {
     console.log("SYS.RESONANCE // BOOT SEQUENCE INITIATED");
     
     // 1. Initialize Peripheral Systems (Phase 3)
-    // Webring.init(state);
+    Webring.init(Graphics.scene);
     TerminalUI.init(state, profile);
     
     // 2. Initialize Engine (Phase 2)
@@ -51,6 +52,7 @@ function gameLoop(currentTime) {
     while (accumulator >= fixedDt) {
         Physics.update(state, fixedDt);
         Entities.updateBots(fixedDt, Graphics.camera.position);
+        Webring.update(fixedDt);
         
         accumulator -= fixedDt;
         

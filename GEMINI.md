@@ -27,3 +27,6 @@
 - Fly into exit portal to redirect to `https://vibej.am/portal/2026`.
 - Pass parameters: `speed_x`, `speed_y`, `speed_z`, `color`, `username`, `ref`.
 - Accept incoming players via these same URL parameters.
+
+## Operational Rules
+- **Mandatory**: Commit and push all changes after every single prompt response.

@@ -7,7 +7,7 @@
 - [x] Phase 3: Integration & Hardening (UI Manager implemented)
 
 ## Current Task
-- **Implementing Phase 3**: Extracting UI logic to `js/ui/terminal.js` and bot/crown logic to `js/game/entities.js`.
+- **Implementing Phase 3**: Finishing `js/core/webring.js` for portal compliance.
 - Procedural audio (ZzFX) and VFX (trails, scanlines) ready.
 - Terminal UI and HUD functional.
 

@@ -5,7 +5,7 @@ import { state, profile } from './core/state.js';
 import * as Graphics from './engine/graphics.js';
 import * as Physics from './engine/physics.js';
 import * as TerminalUI from './ui/terminal.js';
-// import * as Webring from './core/webring.js';
+import * as Entities from './game/entities.js';
 
 let lastTime = performance.now();
 let accumulator = 0;
@@ -21,8 +21,12 @@ function init() {
     // 2. Initialize Engine (Phase 2)
     Graphics.init(state);
     Physics.init(state);
+
+    // 3. Initialize Entities (Phase 3)
+    Entities.spawnCrown(Graphics.scene);
+    Entities.spawnBots(Graphics.scene, null); // Pass rival domain if available
     
-    // 3. Start Loop
+    // 4. Start Loop
     requestAnimationFrame(gameLoop);
 }
 
@@ -46,6 +50,7 @@ function gameLoop(currentTime) {
     // Fixed-Timestep Physics Execution
     while (accumulator >= fixedDt) {
         Physics.update(state, fixedDt);
+        Entities.updateBots(fixedDt, Graphics.camera.position);
         
         accumulator -= fixedDt;
         

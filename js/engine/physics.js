@@ -24,7 +24,7 @@ function getCellKey(p) {
     return `${Math.floor(p.x/cellSize)},${Math.floor(p.y/cellSize)},${Math.floor(p.z/cellSize)}`; 
 }
 
-function getNearby(p) {
+export function getNearby(p) {
     let res = []; 
     const cx = Math.floor(p.x/cellSize), cy = Math.floor(p.y/cellSize), cz = Math.floor(p.z/cellSize);
     for(let x=-1; x<=1; x++) {

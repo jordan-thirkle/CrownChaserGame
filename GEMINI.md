@@ -30,3 +30,4 @@
 
 ## Operational Rules
 - **Mandatory**: Commit and push all changes after every single prompt response.
+- **Technical Logging**: Every commit must include a detailed breakdown of the mathematical or architectural logic implemented (e.g., Hooke's Law parameters, spatial hash cell logic, or shader optimizations).

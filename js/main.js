@@ -36,17 +36,17 @@ const profiler = new Profiler();
 function init() {
     console.log("SYS.RESONANCE // BOOT SEQUENCE INITIATED");
     
-    // 1. Initialize Peripheral Systems (Phase 3)
-    Webring.init(Graphics.scene);
-    TerminalUI.init(state, profile);
-    
-    // 2. Initialize Engine (Phase 2)
+    // 1. Initialize Core Engine FIRST (Creates the Scene & Hash Grid)
     Graphics.init(state);
     Physics.init(state);
 
-    // 3. Initialize Entities (Phase 3)
+    // 2. Initialize Entities (Requires the Scene)
     Entities.spawnCrown(Graphics.scene);
     Entities.spawnBots(Graphics.scene, null); // Pass rival domain if available
+    
+    // 3. Initialize Peripheral Systems (Requires Scene & State)
+    Webring.init(Graphics.scene);
+    TerminalUI.init(state, profile);
     
     // 4. Start Loop
     requestAnimationFrame(gameLoop);

@@ -2,8 +2,8 @@
 import { state, profile } from './core/state.js';
 
 // NOTE: We will uncomment these as we build them in Phase 2 & 3!
-// import * as Graphics from './engine/graphics.js';
-// import * as Physics from './engine/physics.js';
+import * as Graphics from './engine/graphics.js';
+import * as Physics from './engine/physics.js';
 // import * as TerminalUI from './ui/terminal.js';
 // import * as Webring from './core/webring.js';
 
@@ -19,8 +19,8 @@ function init() {
     // TerminalUI.init(state, profile);
     
     // 2. Initialize Engine (Phase 2)
-    // Graphics.init(state);
-    // Physics.init(state);
+    Graphics.init(state);
+    Physics.init(state);
     
     // 3. Start Loop
     requestAnimationFrame(gameLoop);
@@ -31,7 +31,7 @@ function gameLoop(currentTime) {
     
     if (!state.isPlaying || state.isPaused) {
         lastTime = currentTime; // Prevent "spiral of death" when paused
-        // Graphics.render(state); // Keep rendering the static frame
+        Graphics.render(state); // Keep rendering the static frame
         return;
     }
 
@@ -45,7 +45,7 @@ function gameLoop(currentTime) {
 
     // Fixed-Timestep Physics Execution
     while (accumulator >= fixedDt) {
-        // Physics.update(state, fixedDt);
+        Physics.update(state, fixedDt);
         
         accumulator -= fixedDt;
         
@@ -54,7 +54,7 @@ function gameLoop(currentTime) {
         state.input.mouseJustReleased = false;
     }
 
-    // Graphics.render(state);
+    Graphics.render(state);
 }
 
 // --- DECOUPLED INPUT LISTENERS ---

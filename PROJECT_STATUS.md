@@ -1,9 +1,13 @@
 # PROJECT STATUS - RESONANCE 2.0
 
-## Current State
-- `index.html` initialized with the core game engine.
-- Three.js integration complete.
-- Spatial hashing and physics engine implemented.
+## Current Status
+- [x] Initial Proof of Concept
+- [x] Phase 1: The Spine (Modular Orchestrator & State)
+- [x] Phase 2: Extraction (Graphics & Physics Engines)
+- [ ] Phase 3: Integration & Hardening (UI & Entities)
+
+## Current Task
+- **Implementing Phase 3**: Extracting UI logic to `js/ui/terminal.js` and bot/crown logic to `js/game/entities.js`.
 - Procedural audio (ZzFX) and VFX (trails, scanlines) ready.
 - Terminal UI and HUD functional.
 

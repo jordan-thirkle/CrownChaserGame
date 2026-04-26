@@ -62,8 +62,8 @@ export function update(state, dt) {
     // Handle WASD Thrust
     // Fallback to default stats if chassis hasn't injected them yet
     const mass = state.player.stats ? state.player.stats.mass : 1.0;
-    const drag = state.player.stats ? state.player.stats.drag : 0.99;
-    const spring = state.player.stats ? state.player.stats.spring : 30;
+    const drag = state.player.stats ? state.player.stats.drag : 0.996; // Tuned for momentum
+    const spring = state.player.stats ? state.player.stats.spring : 45; // Tuned for snap
 
     const thrust = (35 / mass) * state.combo.multiplier; 
     
@@ -90,7 +90,7 @@ export function update(state, dt) {
 
     // Apply Drag and Max Speed
     vel.multiplyScalar(drag);
-    const currentMax = 100 + (state.combo.multiplier * 15);
+    const currentMax = 120 + (state.combo.multiplier * 20);
     if (vel.length() > currentMax) vel.setLength(currentMax);
 
     // O(1) Collision & Graze Detection

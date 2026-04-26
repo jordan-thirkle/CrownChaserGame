@@ -8,9 +8,11 @@
 - [x] Phase 4: Final Polish (Post-Processing & Refinement)
 
 ## Current Task
-- **Implementing Telemetry Protocol**: `js/engine/debug.js` active.
-- Waiting for first `Debug.dumpReport()` to audit physics balancing.
-- Precision tuning of "Magic Numbers" (drag, mass, spring) scheduled.
+- **Telemetry Audit #001 Complete**: Applied Tuning Patch #001.
+- Momentum preservation increased (`drag: 0.996`).
+- Tether snappiness improved (`spring: 45`).
+- Velocity ceiling raised to reward Flow state.
+- Ready for second-pass balancing.
 
 ## Completed Tasks
 - [x] Project initialization

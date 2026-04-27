@@ -1,0 +1,11 @@
+🧪 Add tests for buyItem logic
+
+🎯 **What:** The testing gap addressed: Missing unit tests for the item purchase logic in js/ui/terminal.js (buyItem function) which mutates global profile state and interacts with UI elements. Added proper local test setup with npm test.
+
+📊 **Coverage:** What scenarios are now tested:
+- Successful chassis purchase (verifies shard deduction and unlock modification)
+- Successful trail purchase (verifies shard deduction and unlock modification)
+- Insufficient shards (verifies state persistence and alert generation)
+- Safely mocked DOM (window, document, alert) and THREE graphics dependencies.
+
+✨ **Result:** The improvement in test coverage provides a safety net to ensure purchasing mechanics work independently of UI state and do not throw browser runtime exceptions during testing.

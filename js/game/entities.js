@@ -124,6 +124,72 @@ export function spawnBots(scene, rivalDomain) {
 
 // --- AI LOGIC ---
 
+function applyBotSteering(bot, id, playerPosVec, vipPos, dt) {
+    let thrustDir = new THREE.Vector3();
+    if (state.currentVipId === id) {
+        thrustDir.subVectors(bot.pos, playerPosVec).normalize(); // Evade
+    } else {
+        thrustDir.subVectors(vipPos, bot.pos).normalize(); // Chase
+    }
+    bot.vel.addScaledVector(thrustDir, (bot.isRival ? 45 : 30) * dt);
+}
+
+function applyBotObstacleAvoidance(bot, dt) {
+    const nearby = Physics.getNearby(bot.pos);
+    for (let c of nearby) {
+        if (bot.pos.distanceTo(c.center) < c.radius + 15) {
+            bot.vel.addScaledVector(new THREE.Vector3().subVectors(bot.pos, c.center).normalize(), 60 * dt);
+        }
+    }
+}
+
+function applyBotPhysicsAndBounds(bot, dt) {
+    bot.vel.multiplyScalar(0.98); // Drag
+    const maxSpeed = bot.isRival ? 100 : 80;
+    if(bot.vel.length() > maxSpeed) bot.vel.setLength(maxSpeed);
+
+    bot.pos.addScaledVector(bot.vel, dt);
+
+    // Bounds
+    if (bot.pos.length() > arenaSize) {
+        bot.pos.normalize().multiplyScalar(arenaSize);
+        bot.vel.multiplyScalar(-0.5);
+    }
+}
+
+function updateBotVisuals(bot, id, dt, cameraPosition) {
+    // Mesh Update
+    bot.mesh.position.lerp(bot.pos, 0.5);
+    if (cameraPosition) bot.mesh.lookAt(cameraPosition);
+
+    // Visuals & Tagging
+    if (id === state.currentVipId) {
+        bot.glow.visible = true;
+        bot.mesh.rotation.z += dt * 5;
+        bot.glow.material.color.setHex(0xffcc00);
+        updateTrail(bot.trail, bot.pos, 0xffcc00, 'linear', 0);
+    } else {
+        bot.glow.visible = false;
+        bot.mesh.rotation.z += dt;
+        updateTrail(bot.trail, bot.pos, bot.isRival ? 0xff0000 : 0x00f0ff, 'linear', 0);
+    }
+}
+
+function checkCrownSteal(bot, id, vipPos) {
+    if (id !== state.currentVipId && bot.pos.distanceTo(vipPos) < 6) {
+        state.currentVipId = id;
+        // SFX & UI trigger through external modules
+        TerminalUI.triggerPerfectFlash();
+        TerminalUI.spawnPopup("CROWN LOST!", "#ff007f");
+        
+        bot.vel.multiplyScalar(-0.5);
+        if(state.currentVipId === 'player') {
+            // If it stole from player, knock player back
+            state.player.vel.x *= -0.5; state.player.vel.y *= -0.5; state.player.vel.z *= -0.5;
+        }
+    }
+}
+
 export function updateBots(dt, cameraPosition) {
     // Helper to extract Vector3 from plain state object
     const playerPosVec = new THREE.Vector3(state.player.pos.x, state.player.pos.y, state.player.pos.z);
@@ -132,65 +198,12 @@ export function updateBots(dt, cameraPosition) {
     if (!vipPos) return;
 
     for (let id in state.peers) {
-        let bot = state.peers[id]; 
-        let thrustDir = new THREE.Vector3();
-        
-        // Steering Vectors
-        if (state.currentVipId === id) {
-            thrustDir.subVectors(bot.pos, playerPosVec).normalize(); // Evade
-        } else {
-            thrustDir.subVectors(vipPos, bot.pos).normalize(); // Chase
-        }
+        let bot = state.peers[id];
 
-        bot.vel.addScaledVector(thrustDir, (bot.isRival ? 45 : 30) * dt); 
-        
-        // Obstacle Avoidance utilizing O(1) Grid
-        const nearby = Physics.getNearby(bot.pos);
-        for (let c of nearby) {
-            if (bot.pos.distanceTo(c.center) < c.radius + 15) {
-                bot.vel.addScaledVector(new THREE.Vector3().subVectors(bot.pos, c.center).normalize(), 60 * dt);
-            }
-        }
-
-        bot.vel.multiplyScalar(0.98); // Drag
-        const maxSpeed = bot.isRival ? 100 : 80;
-        if(bot.vel.length() > maxSpeed) bot.vel.setLength(maxSpeed);
-
-        bot.pos.addScaledVector(bot.vel, dt);
-        
-        // Bounds
-        if (bot.pos.length() > arenaSize) { 
-            bot.pos.normalize().multiplyScalar(arenaSize); 
-            bot.vel.multiplyScalar(-0.5); 
-        }
-
-        // Mesh Update
-        bot.mesh.position.lerp(bot.pos, 0.5);
-        if (cameraPosition) bot.mesh.lookAt(cameraPosition);
-
-        // Visuals & Tagging
-        if (id === state.currentVipId) { 
-            bot.glow.visible = true; 
-            bot.mesh.rotation.z += dt * 5; 
-            bot.glow.material.color.setHex(0xffcc00); 
-            updateTrail(bot.trail, bot.pos, 0xffcc00, 'linear', 0); 
-        } else { 
-            bot.glow.visible = false; 
-            bot.mesh.rotation.z += dt; 
-            updateTrail(bot.trail, bot.pos, bot.isRival ? 0xff0000 : 0x00f0ff, 'linear', 0); 
-        }
-
-        if (id !== state.currentVipId && bot.pos.distanceTo(vipPos) < 6) {
-            state.currentVipId = id; 
-            // SFX & UI trigger through external modules
-            TerminalUI.triggerPerfectFlash();
-            TerminalUI.spawnPopup("CROWN LOST!", "#ff007f");
-            
-            bot.vel.multiplyScalar(-0.5); 
-            if(state.currentVipId === 'player') {
-                // If it stole from player, knock player back
-                state.player.vel.x *= -0.5; state.player.vel.y *= -0.5; state.player.vel.z *= -0.5;
-            }
-        }
+        applyBotSteering(bot, id, playerPosVec, vipPos, dt);
+        applyBotObstacleAvoidance(bot, dt);
+        applyBotPhysicsAndBounds(bot, dt);
+        updateBotVisuals(bot, id, dt, cameraPosition);
+        checkCrownSteal(bot, id, vipPos);
     }
 }

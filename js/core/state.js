@@ -47,7 +47,7 @@ export const state = {
     }
 };
 
-function loadProfile() {
+export function loadProfile() {
     let loaded;
     try {
         loaded = JSON.parse(localStorage.getItem('vibe_resonance_profile')) || {};

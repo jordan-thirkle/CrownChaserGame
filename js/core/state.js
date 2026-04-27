@@ -7,7 +7,6 @@ export const profile = loadProfile();
 
 // 2. Centralized Game State
 export const state = {
-    gamePhase: 'intro', // 'intro', 'playing'
     isPlaying: false,
     isPaused: false,
     lastDt: 0,

@@ -8,11 +8,9 @@
 - [x] Phase 4: Final Polish (Post-Processing & Refinement)
 
 ## Current Task
-- **Telemetry Audit #001 Complete**: Applied Tuning Patch #001.
-- Momentum preservation increased (`drag: 0.996`).
-- Tether snappiness improved (`spring: 45`).
-- Velocity ceiling raised to reward Flow state.
-- Ready for second-pass balancing.
+- **Telemetry Logging Active**: Audits stored in `telemetry_logs/`.
+- Telemetry Audit #001 complete & logged.
+- Ready for Audit #002 (High-speed momentum validation).
 
 ## Completed Tasks
 - [x] Project initialization

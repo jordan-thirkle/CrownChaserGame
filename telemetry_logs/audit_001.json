@@ -1,0 +1,20 @@
+{
+  "audit_id": "001",
+  "timestamp": 48925.1,
+  "engine": {
+    "fps": 164,
+    "acc": 0.0057,
+    "steps": 1
+  },
+  "physics": {
+    "playerSpeed": 0.0048,
+    "multiplier": 1,
+    "tetherActive": false
+  },
+  "entities": {
+    "botCount": 10,
+    "vip": "crown_entity"
+  },
+  "diagnosis": "High-refresh detected (164fps). Accumulator stable at <1ms. Velocity decay confirmed too aggressive (player speed dropped to near-zero within sample window).",
+  "patch_applied": "PATCH #001: Drag 0.99 -> 0.996, Spring 30 -> 45, Max Speed 100 -> 120."
+}

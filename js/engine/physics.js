@@ -88,10 +88,17 @@ export function update(state, dt) {
         vel.copy(tangential).add(proj.multiplyScalar(0.85)); 
     }
 
-    // Apply Drag and Max Speed
-    vel.multiplyScalar(drag);
-    const currentMax = 120 + (state.combo.multiplier * 20);
-    if (vel.length() > currentMax) vel.setLength(currentMax);
+    // Apply Drag and Max Speed (Soft Ceiling Logic)
+    let currentDrag = drag;
+    const ceiling = 150 + (state.combo.multiplier * 25);
+    
+    // If over-speeding, apply extra drag instead of hard clamping
+    const overspeed = vel.length() / ceiling;
+    if (overspeed > 1.0) {
+        currentDrag *= Math.pow(0.95, overspeed - 1.0); // Aggressive decay for over-speed
+    }
+    
+    vel.multiplyScalar(currentDrag);
 
     // O(1) Collision & Graze Detection
     const nextPos = pos.clone().addScaledVector(vel, dt);

@@ -8,9 +8,10 @@
 - [x] Phase 4: Final Polish (Post-Processing & Refinement)
 
 ## Current Task
-- **Telemetry Logging Active**: Audits stored in `telemetry_logs/`.
-- Telemetry Audit #001 complete & logged.
-- Ready for Audit #002 (High-speed momentum validation).
+- **Telemetry Audit #002 Complete**: Momentum math validated.
+- **Soft Ceiling Implemented**: Exponential drag replaces hard clamping.
+- 150u base ceiling enables 'Super-Slingshots'.
+- Ready for Final Audio Hardening (3D Panning).
 
 ## Completed Tasks
 - [x] Project initialization

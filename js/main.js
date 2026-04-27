@@ -13,7 +13,7 @@ let lastTime = performance.now();
 let accumulator = 0;
 const fixedDt = 1 / 60; // Strictly 60Hz (16.666ms)
 
-class Profiler {
+export class Profiler {
     constructor() {
         this.frameTimes = [];
         this.accDepths = [];

@@ -1,0 +1,24 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --import ./test-setup.js --test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jordan-thirkle/CrownChaserGame.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/jordan-thirkle/CrownChaserGame/issues"
+  },
+  "homepage": "https://github.com/jordan-thirkle/CrownChaserGame#readme",
+  "devDependencies": {
+    "jsdom": "^29.1.0"
+  }
+}

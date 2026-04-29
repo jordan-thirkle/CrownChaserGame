@@ -2,17 +2,30 @@ import test from 'node:test';
 import assert from 'node:assert';
 
 // Mock DOM & LocalStorage before any imports
+const createMockElement = (id = '') => ({
+    id,
+    innerText: '',
+    textContent: '',
+    innerHTML: '',
+    value: '',
+    style: {},
+    className: '',
+    disabled: false,
+    addEventListener: () => {},
+    appendChild: () => {},
+    classList: {
+        add: () => {},
+        remove: () => {},
+        contains: () => false
+    }
+});
+
 global.window = {};
 global.document = {
-    getElementById: (id) => ({
-        id: id,
-        innerText: '',
-        innerHTML: '',
-        value: '',
-        addEventListener: () => {}
-    }),
+    getElementById: (id) => createMockElement(id),
     body: { requestPointerLock: () => {}, appendChild: () => {} },
-    createElement: () => ({ style: {} }),
+    createElement: () => createMockElement(),
+    createDocumentFragment: () => ({ appendChild: () => {} }),
     addEventListener: () => {}
 };
 global.localStorage = {

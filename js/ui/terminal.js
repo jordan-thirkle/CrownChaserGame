@@ -67,18 +67,54 @@ function renderStore(db, unlockedList, equippedId, containerId, typeStr) {
     if (!container) return;
     
     container.innerHTML = '';
+
+    // Create a document fragment to avoid iterative reflows and XSS vulnerabilities via innerHTML +=
+    const fragment = document.createDocumentFragment();
+
     for (let id in db) {
         const item = db[id];
         const isUnlocked = unlockedList.includes(id);
         const isEquipped = equippedId === id;
         
-        let btnHTML = isEquipped ? `<button class="btn btn-buy" disabled style="background:var(--boost); color:black;">EQUIPPED</button>` : 
-                      isUnlocked ? `<button class="btn btn-buy" onclick="equipItem('${typeStr}', '${id}')">EQUIP</button>` : 
-                      `<button class="btn btn-buy" onclick="buyItem('${typeStr}', '${id}')">BUY (${item.cost})</button>`;
+        const itemDiv = document.createElement('div');
+        itemDiv.className = `store-item ${isEquipped ? 'equipped' : ''}`;
 
-        container.innerHTML += `<div class="store-item ${isEquipped ? 'equipped' : ''}">
-            <div class="item-info"><span class="item-name">${item.name}</span><span class="item-desc">${item.desc}</span></div>${btnHTML}</div>`;
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'item-info';
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'item-name';
+        nameSpan.textContent = item.name;
+
+        const descSpan = document.createElement('span');
+        descSpan.className = 'item-desc';
+        descSpan.textContent = item.desc;
+
+        infoDiv.appendChild(nameSpan);
+        infoDiv.appendChild(descSpan);
+        itemDiv.appendChild(infoDiv);
+
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-buy';
+        if (isEquipped) {
+            btn.disabled = true;
+            btn.style.background = 'var(--boost)';
+            btn.style.color = 'black';
+            btn.textContent = 'EQUIPPED';
+        } else if (isUnlocked) {
+            // Using closures instead of inline onclick for better security and scoping
+            btn.addEventListener('click', () => window.equipItem(typeStr, id));
+            btn.textContent = 'EQUIP';
+        } else {
+            btn.addEventListener('click', () => window.buyItem(typeStr, id));
+            btn.textContent = `BUY (${item.cost})`;
+        }
+        itemDiv.appendChild(btn);
+
+        fragment.appendChild(itemDiv);
     }
+
+    container.appendChild(fragment);
 }
 
 function buyItem(type, id) {

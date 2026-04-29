@@ -5,37 +5,6 @@ import * as Physics from '../engine/physics.js'; // Requires export of getNearby
 
 const arenaSize = 400;
 
-// --- PROCEDURAL CHASSIS GENERATORS (Micro-Assets) ---
-
-export function createOrbGeometry() { 
-    const group = new THREE.Group(); 
-    group.add(new THREE.Mesh(new THREE.SphereGeometry(1.5, 16, 16), new THREE.MeshStandardMaterial({color: 0x222222, metalness: 1, roughness: 0.2}))); 
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(2.5, 0.2, 8, 32), new THREE.MeshBasicMaterial({color: 0x00f0ff, wireframe: true})); 
-    ring.rotation.x = Math.PI / 2; 
-    group.add(ring); 
-    return group; 
-}
-
-export function createNeedleGeometry() { 
-    const group = new THREE.Group(); 
-    const nose = new THREE.Mesh(new THREE.ConeGeometry(1, 4, 8), new THREE.MeshStandardMaterial({color: 0x333344})); 
-    nose.rotation.x = Math.PI / 2; 
-    nose.position.z = -2; 
-    group.add(nose); 
-    const body = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 3, 8), new THREE.MeshBasicMaterial({color: 0xff007f, wireframe: true})); 
-    body.rotation.x = Math.PI / 2; 
-    body.position.z = 1.5; 
-    group.add(body); 
-    return group; 
-}
-
-export function createBruteGeometry() { 
-    const group = new THREE.Group(); 
-    group.add(new THREE.Mesh(new THREE.BoxGeometry(3, 3, 3), new THREE.MeshStandardMaterial({color: 0x111111}))); 
-    group.add(new THREE.Mesh(new THREE.BoxGeometry(4.5, 1, 4.5), new THREE.MeshBasicMaterial({color: 0xffcc00, wireframe: true}))); 
-    return group; 
-}
-
 // --- ZERO-GC TRAIL BUFFER ---
 
 export function createTrailBuffer(scene) {

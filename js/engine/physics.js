@@ -39,40 +39,62 @@ export function getNearby(p) {
 }
 
 export function update(state, dt) {
-    // Trigger Tether Logic (With Input Buffering)
+    updateTetherLogic(state);
+    updateComboDecay(state, dt);
+
+    let pos = new THREE.Vector3(state.player.pos.x, state.player.pos.y, state.player.pos.z);
+    let vel = new THREE.Vector3(state.player.vel.x, state.player.vel.y, state.player.vel.z);
+
+    const { mass, drag, spring } = getPlayerStats(state);
+
+    applyInputThrust(state, vel, mass, dt);
+    applyTetherForces(state, pos, vel, spring, dt);
+    applyDragAndCeiling(state, vel, drag);
+    resolveCollisions(state, pos, vel, dt);
+
+    // Write back to state
+    state.player.pos = { x: pos.x, y: pos.y, z: pos.z };
+    state.player.vel = { x: vel.x, y: vel.y, z: vel.z };
+
+    // Update HUD
+    TerminalUI.updateHUD(vel.length(), state.combo.multiplier, state.combo.timer, state.combo.maxTime);
+}
+
+function updateTetherLogic(state) {
     if (state.input.bufferTimer > 0 && !state.tether.active) {
         attemptTether(state);
     }
     if (state.input.mouseJustReleased) releaseTether(state);
+}
 
-    // Combo Decay Math
+function updateComboDecay(state, dt) {
     if (state.combo.timer > 0) { 
         state.combo.timer -= dt; 
     } else if (state.combo.multiplier > 1.0) { 
         state.combo.multiplier = Math.max(1.0, state.combo.multiplier - (state.combo.decayRate * dt)); 
     }
+}
 
-    // Translate player object into Vector3s for math
-    let pos = new THREE.Vector3(state.player.pos.x, state.player.pos.y, state.player.pos.z);
-    let vel = new THREE.Vector3(state.player.vel.x, state.player.vel.y, state.player.vel.z);
-    
+function getPlayerStats(state) {
+    return {
+        mass: state.player.stats ? state.player.stats.mass : 1.0,
+        drag: state.player.stats ? state.player.stats.drag : 0.996,
+        spring: state.player.stats ? state.player.stats.spring : 45
+    };
+}
+
+function applyInputThrust(state, vel, mass, dt) {
     const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
     const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
-    
-    // Handle WASD Thrust
-    // Fallback to default stats if chassis hasn't injected them yet
-    const mass = state.player.stats ? state.player.stats.mass : 1.0;
-    const drag = state.player.stats ? state.player.stats.drag : 0.996; // Tuned for momentum
-    const spring = state.player.stats ? state.player.stats.spring : 45; // Tuned for snap
-
     const thrust = (35 / mass) * state.combo.multiplier; 
     
     if (state.input.forward) vel.addScaledVector(forward, thrust * dt);
     if (state.input.backward) vel.addScaledVector(forward, -thrust * dt);
     if (state.input.right) vel.addScaledVector(right, thrust * dt);
     if (state.input.left) vel.addScaledVector(right, -thrust * dt);
+}
 
-    // Tether Physics (Hooke's Law + Tangential Preservation)
+function applyTetherForces(state, pos, vel, spring, dt) {
     if (state.tether.active) {
         const tetherPoint = new THREE.Vector3(state.tether.point.x, state.tether.point.y, state.tether.point.z);
         const dir = new THREE.Vector3().subVectors(tetherPoint, pos); 
@@ -87,20 +109,21 @@ export function update(state, dt) {
         const tangential = new THREE.Vector3().subVectors(vel, proj);
         vel.copy(tangential).add(proj.multiplyScalar(0.85)); 
     }
+}
 
-    // Apply Drag and Max Speed (Soft Ceiling Logic)
+function applyDragAndCeiling(state, vel, drag) {
     let currentDrag = drag;
     const ceiling = 150 + (state.combo.multiplier * 25);
     
-    // If over-speeding, apply extra drag instead of hard clamping
     const overspeed = vel.length() / ceiling;
     if (overspeed > 1.0) {
-        currentDrag *= Math.pow(0.95, overspeed - 1.0); // Aggressive decay for over-speed
+        currentDrag *= Math.pow(0.95, overspeed - 1.0);
     }
     
     vel.multiplyScalar(currentDrag);
+}
 
-    // O(1) Collision & Graze Detection
+function resolveCollisions(state, pos, vel, dt) {
     const nextPos = pos.clone().addScaledVector(vel, dt);
     const nearby = getNearby(nextPos); 
     let collided = false;
@@ -108,18 +131,16 @@ export function update(state, dt) {
     for (let c of nearby) {
         const dist = nextPos.distanceTo(c.center);
         if (dist < c.radius + state.player.radius) {
-            // Hard Collision
             vel.multiplyScalar(-0.5); 
             state.combo.multiplier = 1.0; 
             state.combo.timer = 0; 
             
             TerminalUI.triggerDamageFlash();
             
-            releaseTether(state, true); // Force break
+            releaseTether(state, true);
             collided = true; 
             break;
         } else if (dist < c.radius + state.player.radius + 6.0) {
-            // Graze
             if (!c.grazed) { 
                 c.grazed = true; 
                 state.combo.multiplier += 0.5;
@@ -130,20 +151,12 @@ export function update(state, dt) {
         }
     }
 
-    // Arena Bounds
     if (nextPos.length() > arenaSize) { 
         nextPos.normalize().multiplyScalar(arenaSize); 
         vel.multiplyScalar(-0.5); 
     }
 
     if (!collided) pos.copy(nextPos);
-
-    // Write back to state
-    state.player.pos = { x: pos.x, y: pos.y, z: pos.z };
-    state.player.vel = { x: vel.x, y: vel.y, z: vel.z };
-    
-    // Update HUD
-    TerminalUI.updateHUD(vel.length(), state.combo.multiplier, state.combo.timer, state.combo.maxTime);
 }
 
 function attemptTether(state) {

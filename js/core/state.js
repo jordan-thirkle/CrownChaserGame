@@ -37,6 +37,7 @@ export const state = {
     },
     
     peers: {}, // Holds bot and ghost data
+    rivalDomain: null,
     
     // Decoupled Input State (Read by Physics, written by Main)
     input: {
@@ -50,7 +51,11 @@ export const state = {
 function loadProfile() {
     let loaded;
     try {
-        loaded = JSON.parse(localStorage.getItem('vibe_resonance_profile')) || {};
+        if (typeof localStorage !== 'undefined') {
+            loaded = JSON.parse(localStorage.getItem('vibe_resonance_profile')) || {};
+        } else {
+            loaded = {};
+        }
     } catch(e) {
         loaded = {};
     }
@@ -68,14 +73,18 @@ function loadProfile() {
             unlockedTrails: Array.isArray(loaded.unlockedTrails) ? loaded.unlockedTrails : ['basic'],
             equippedTrail: loaded.equippedTrail || 'basic'
         };
-        localStorage.setItem('vibe_resonance_profile', JSON.stringify(loaded));
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('vibe_resonance_profile', JSON.stringify(loaded));
+        }
     }
     return loaded;
 }
 
 export function saveProfile() {
     try {
-        localStorage.setItem('vibe_resonance_profile', JSON.stringify(profile));
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('vibe_resonance_profile', JSON.stringify(profile));
+        }
     } catch(e) {
         console.warn("[SYS] Failed to save profile to localStorage", e);
     }

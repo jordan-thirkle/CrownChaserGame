@@ -2,6 +2,7 @@
 import { state, profile } from '../core/state.js';
 import * as TerminalUI from '../ui/terminal.js';
 import * as Physics from '../engine/physics.js'; // Requires export of getNearby()
+import * as Audio from '../engine/audio.js';
 
 const arenaSize = 400;
 
@@ -150,6 +151,7 @@ function checkCrownSteal(bot, id, vipPos) {
         // SFX & UI trigger through external modules
         TerminalUI.triggerPerfectFlash();
         TerminalUI.spawnPopup("CROWN LOST!", "#ff007f");
+        Audio.play3D(Audio.sfx.stealCrown, bot.pos);
         
         bot.vel.multiplyScalar(-0.5);
         if(state.currentVipId === 'player') {

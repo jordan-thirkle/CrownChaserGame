@@ -1,6 +1,7 @@
 // js/ui/terminal.js
 import { state, profile, saveProfile } from '../core/state.js';
 import * as Graphics from '../engine/graphics.js';
+import * as Audio from '../engine/audio.js';
 
 // --- ASSET DATABASE ---
 const chassisDB = {
@@ -40,7 +41,8 @@ export function init() {
 
     const deployBtn = document.getElementById('btn-deploy');
     if (deployBtn) {
-        deployBtn.addEventListener('click', deployToArena);
+        deployBtn.addEventListener('mouseenter', () => Audio.play(Audio.sfx.uiHover));
+        deployBtn.addEventListener('click', () => { Audio.play(Audio.sfx.uiClick); deployToArena(); });
     }
 
     // Initialize Garage Preview Camera
@@ -105,10 +107,12 @@ function renderStore(db, unlockedList, equippedId, containerId, typeStr) {
             btn.textContent = 'EQUIPPED';
         } else if (isUnlocked) {
             // Using closures instead of inline onclick for better security and scoping
-            btn.addEventListener('click', () => window.equipItem(typeStr, id));
+            btn.addEventListener('mouseenter', () => Audio.play(Audio.sfx.uiHover));
+            btn.addEventListener('click', () => { window.equipItem(typeStr, id); Audio.play(Audio.sfx.uiClick); });
             btn.textContent = 'EQUIP';
         } else {
-            btn.addEventListener('click', () => window.buyItem(typeStr, id));
+            btn.addEventListener('mouseenter', () => Audio.play(Audio.sfx.uiHover));
+            btn.addEventListener('click', () => { window.buyItem(typeStr, id); });
             btn.textContent = `BUY (${item.cost})`;
         }
         itemDiv.appendChild(btn);
@@ -122,6 +126,7 @@ function renderStore(db, unlockedList, equippedId, containerId, typeStr) {
 function buyItem(type, id) {
     const cost = type === 'chassis' ? chassisDB[id].cost : trailsDB[id].cost;
     if (profile.shards >= cost) {
+        Audio.play(Audio.sfx.uiClick);
         profile.shards -= cost;
         type === 'chassis' ? profile.unlockedChassis.push(id) : profile.unlockedTrails.push(id);
         saveProfile();

@@ -2,6 +2,7 @@
 import { state } from '../core/state.js';
 import { colliders, camera } from './graphics.js';
 import * as TerminalUI from '../ui/terminal.js';
+import * as Audio from './audio.js';
 
 // O(1) Spatial Grid Data
 // ... (rest of the file)
@@ -136,6 +137,7 @@ function resolveCollisions(state, pos, vel, dt) {
             state.combo.timer = 0; 
             
             TerminalUI.triggerDamageFlash();
+            Audio.play3D(Audio.sfx.hitObstacle, c.center);
             
             releaseTether(state, true);
             collided = true; 
@@ -145,6 +147,7 @@ function resolveCollisions(state, pos, vel, dt) {
                 c.grazed = true; 
                 state.combo.multiplier += 0.5;
                 state.combo.timer = state.combo.maxTime;
+                Audio.play3D(Audio.sfx.graze, c.center);
             }
         } else { 
             c.grazed = false; 
@@ -184,6 +187,7 @@ function attemptTether(state) {
         state.tether.length = camera.position.distanceTo(closest);
         TerminalUI.setCrosshairTethered(true);
         state.input.bufferTimer = 0; // Consume intent
+        Audio.play3D(Audio.sfx.tetherAttach, state.tether.point);
     }
 }
 
@@ -201,8 +205,12 @@ function releaseTether(state, forced = false) {
             state.combo.timer = state.combo.maxTime;
             
             TerminalUI.triggerPerfectFlash();
+            Audio.play3D(Audio.sfx.perfectRelease, state.player.pos);
         } else if (vel.clone().normalize().dot(forward) > 0) {
             vel.multiplyScalar(1.5);
+            Audio.play3D(Audio.sfx.tetherRelease, state.tether.point);
+        } else {
+            Audio.play3D(Audio.sfx.tetherRelease, state.tether.point);
         }
         
         state.player.vel = { x: vel.x, y: vel.y, z: vel.z };

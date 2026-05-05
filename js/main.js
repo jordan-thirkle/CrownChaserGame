@@ -8,6 +8,7 @@ import * as TerminalUI from './ui/terminal.js';
 import * as Entities from './game/entities.js';
 import * as Webring from './core/webring.js';
 import * as Debug from './engine/debug.js';
+import * as Audio from './engine/audio.js';
 
 let lastTime = performance.now();
 let accumulator = 0;
@@ -49,6 +50,7 @@ function init() {
     Webring.init(Graphics.scene);
     TerminalUI.init(state, profile);
     Debug.init();
+    Audio.init();
     
     // 4. Start Loop
     requestAnimationFrame(gameLoop);

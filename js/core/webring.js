@@ -28,19 +28,49 @@ export function init(scene) {
     parseInbound();
 }
 
+export function sanitizeUsername(name) {
+    if (!name) return "";
+    // Security Fix: Sanitize and validate inbound username
+    // 1. Strip non-alphanumeric (except underscores)
+    // 2. Limit to 12 chars (matches UI)
+    return name.replace(/[^a-zA-Z0-9_]/g, '').substring(0, 12).toUpperCase();
+}
+
+export function sanitizeRef(ref) {
+    if (!ref) return null;
+    let sanitized = ref;
+    try {
+        // If it's a full URL, extract just the hostname
+        const url = new URL(ref);
+        sanitized = url.hostname;
+    } catch(e) {
+        // Not a URL, treat as a potential domain string
+    }
+    // Strict alphanumeric + dot validation for domain-like strings
+    sanitized = sanitized.replace(/[^a-zA-Z0-9.-]/g, '').substring(0, 32);
+    return sanitized.length > 0 ? sanitized : null;
+}
+
 function parseInbound() {
     const urlParams = new URLSearchParams(window.location.search);
     
     // Inherit username if passed from previous Webring node
     const inboundUser = urlParams.get('username');
     if (inboundUser && !profile.username) {
-        profile.username = inboundUser.toUpperCase();
-        saveProfile();
-        // UI will automatically update via state binding
+        const sanitized = sanitizeUsername(inboundUser);
+        if (sanitized.length > 0) {
+            profile.username = sanitized;
+            saveProfile();
+            // UI will automatically update via state binding
+        }
     }
     
-    // Note: The 'ref' parameter (Rival Domain tracking) is independently 
-    // parsed inside entities.js during the bot spawning phase.
+    // Security Fix: Sanitize and validate 'ref' parameter (Rival Domain tracking)
+    const inboundRef = urlParams.get('ref');
+    const sanitizedRef = sanitizeRef(inboundRef);
+    if (sanitizedRef) {
+        state.rivalDomain = sanitizedRef;
+    }
 }
 
 export function update(dt) {

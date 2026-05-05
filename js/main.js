@@ -44,7 +44,7 @@ function init() {
 
     // 2. Initialize Entities (Requires the Scene)
     Entities.spawnCrown(Graphics.scene);
-    Entities.spawnBots(Graphics.scene, null); // Pass rival domain if available
+    Entities.spawnBots(Graphics.scene, state.rivalDomain); // Pass rival domain if available
     
     // 3. Initialize Peripheral Systems (Requires Scene & State)
     Webring.init(Graphics.scene);

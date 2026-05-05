@@ -17,8 +17,10 @@ const trailsDB = {
 };
 
 // Make these globally accessible so the inline onclick HTML can reach them
-window.buyItem = buyItem;
-window.equipItem = equipItem;
+if (typeof window !== 'undefined') {
+    window.buyItem = buyItem;
+    window.equipItem = equipItem;
+}
 
 export function init() {
     console.log("[SYS] Initializing Terminal UI...");
